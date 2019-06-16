@@ -35,7 +35,7 @@ map<string, int> nodeToLocation;
 
 void genGraph(int n){
     srand(8979);
-
+    cerr<<" ============ NAME OF THE LOCATIONS ===============\n";
     for(int i = 1; i <= n; i++){
         string s = "";
         for(int j = 0; j < 4; j++){
@@ -79,13 +79,13 @@ void genGraph(int n){
 
     }
 
-    for(int i = 1; i <= n; i++){
+    /*for(int i = 1; i <= n; i++){
         cerr<<i<<": ";
         for(int j=0; j < G[i].size(); j++){
             cerr<<G[i][j].first<<","<<G[i][j].second<<" ";
         }
         cerr<<endl;
-    }
+    }*/
 
 }
 
@@ -136,7 +136,7 @@ void genDrivers(int n){
         drivers[i].fineCount = rand()%5;
         drivers[i].fineSum = drivers[i].fineCount * 100;
 
-        drivers[i].rating = 3.0 + (rand()%10)/2.0;
+        drivers[i].rating = 3.0 + (rand()%10)/5.0;
 
 
     }
@@ -200,8 +200,7 @@ void getDist(int source){
 
 
 
-
-pair<int, int> findDriver(int source, int passCount, double rating){
+pair<Driver, double> findDriver(int source, int passCount, double rating){
     memset(marked, 0, sizeof(marked));
     priority_queue<Node1> pq;
 
@@ -215,7 +214,12 @@ pair<int, int> findDriver(int source, int passCount, double rating){
             continue;
 
         if (dpos[tmp1.itself].size() > 0){
-            return make_
+            Driver driver = drivers[*(dpos[tmp1.itself].begin())];
+            if (driver.maxPass >= passCount){
+                return make_pair(driver, tmp1.cost);
+            }
+
+
         }
 
 
@@ -232,7 +236,7 @@ pair<int, int> findDriver(int source, int passCount, double rating){
 
     }
 
-    return make_pair(-1, -1);
+    return make_pair(Driver(), 1<<28);
 
 
 }
@@ -252,10 +256,12 @@ int main(){
         string source, dest;
         int passCount;
         double rating;
+
         cin>>source>>dest>>passCount>>rating;
 
+        pair<Driver, double> suggestion = findDriver(nodeToLocation[source], passCount, 5.0);
 
-
+        cout << "driver name " << suggestion.first.name << ", rating " << suggestion.first.rating << " car capacity " << suggestion.first.maxPass << ", distance from pickup point " << suggestion.second << endl;
 
     }
 
